@@ -1,34 +1,41 @@
 #include <iostream>
 #include <fstream>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <vector>
 
-struct NearestPoints {
-    std::pair<double, double> point1;
-    std::pair<double, double> point2;
+struct Point {
+    float x;
+    float y;
 };
 
-bool Read(double (*&points)[2], unsigned int &n);
-std::vector<std::pair<double, double>> findHalo(std::vector<std::pair<double, double>> data);
-NearestPoints findNearestPoints(double (*points)[2], unsigned int n);
+struct NearestPoints {
+    Point point1;
+    Point point2;
+};
+
+bool Read(Point *&points, unsigned int &n);
+int findConvexHull(Point *points, unsigned int n);
+NearestPoints findNearestPoints(Point *points, unsigned int n);
 
 int main() {
-    double (*data)[2] = nullptr;
+    Point *data = nullptr;
     unsigned int size = 0;
 
     if (!Read(data, size)) {
+        delete[] data;
+        data = nullptr;
         return 1;
     }
 
-    findNearestPoints(data, size);
+    NearestPoints zad3 = findNearestPoints(data, size);
 
     delete[] data;
     data = nullptr;
     return 0;
 }
 
-bool Read(double (*&points)[2], unsigned int &n){
+bool Read(Point *&points, unsigned int &n){
     std::cout << "Enter filename: ";
     std::string filename;
     std::cin >> filename;
@@ -38,14 +45,14 @@ bool Read(double (*&points)[2], unsigned int &n){
     if (file.is_open()) {
         file >> n;
 
-        points = new double[n][2];
+        points = new Point[n];
 
-        double x,y;
+        float x,y;
 
         for (int i = 0; i < n; i++) {
             file >> x >> y;
-            points[i][0] = x;
-            points[i][1] = y;
+            points[i].x = x;
+            points[i].y = y;
         }
 
         file.close();
@@ -56,32 +63,42 @@ bool Read(double (*&points)[2], unsigned int &n){
     }
 }
 
-/*std::vector<std::pair<double, double>> findHalo(std::vector<std::pair<double, double>> data) {
+int findConvexHull(Point *points, unsigned int n) {
+
+    if (n < 3) {
+        return -1;
+    }
+
+    Point p0;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {}
+    }
+}
 
 
-    return data;
-}*/
-
-NearestPoints findNearestPoints(double (*points)[2], unsigned int n) {
-    double minD = std::numeric_limits<double>::max();
-    std::pair<double, double> point1;
-    std::pair<double, double> point2;
+NearestPoints findNearestPoints(Point *points, unsigned int n) {
+    float minD = std::numeric_limits<float>::max();
+    Point point1 = {0.0,0.0};
+    Point point2 = {0.0,0.0};
 
     for (int i = 0; i < n - 1; i++) {
         for (int j = i + 1; j < n; j++) {
-            double x = points[j][0] - points[i][0];
-            double y = points[j][1] - points[i][1];
+            float x = points[j].x - points[i].x;
+            float y = points[j].y - points[i].y;
 
-            double d = sqrt((x * x) + (y * y));
+            float d = sqrt((x * x) + (y * y));
+
             if (d < minD) {
                 minD = d;
-                point1 = {points[i][0], points[i][1] };
-                point2 = {points[j][0], points[j][1] };
+
+                point1 = points[i];
+                point2 = points[j];
             }
         }
     }
 
-    std::cout << "Najblizsze punkty: [(" << point1.first << "," << point1.second << "),(" << point2.first << "," << point2.second << ")]" << ", d = " <<  minD << std::endl;
+    std::cout << "Najblizsze punkty: [(" << point1.x << "," << point1.y << "),(" << point2.x << "," << point2.y << ")]" << ", d = " <<  minD << std::endl;
 
     return {point1, point2};
 }
