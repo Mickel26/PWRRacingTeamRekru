@@ -72,7 +72,6 @@ bool Read(Point *&points, unsigned int &n){
         file.close();
         return true;
     } else {
-        std::cout << "Couldn't open file";
         return false;
     }
 }
