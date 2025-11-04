@@ -17,7 +17,7 @@ struct NearestPoints {
     Point point2;
 };
 
-//Funkcja odczytuje dane z pliku i zapisuje je do tablicy, zwraca 0 lub 1 w zależności od tego czy uda się odczytać plik
+//Funkcja odczytuje dane z pliku i zapisuje je do tablicy, zwraca True lub False w zależności od tego czy uda się odczytać plik
 bool Read(Point *&points, unsigned int &n);
 
 //Funkcja sprawdza kierunek w którym idą 3 punkty i zwraca:
