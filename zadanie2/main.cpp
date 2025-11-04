@@ -4,19 +4,31 @@
 #include <string>
 #include <vector>
 
+
+//Struktura do punktów z pliku
 struct Point {
     float x;
     float y;
 };
 
+//Struktura na 2 najbliższe punkty
 struct NearestPoints {
     Point point1;
     Point point2;
 };
 
+//Funkcja odczytuje dane z pliku i zapisuje je do tablicy, zwraca 0 lub 1 w zależności od tego czy uda się odczytać plik
 bool Read(Point *&points, unsigned int &n);
+
+//Funkcja sprawdza kierunek w którym idą 3 punkty i zwraca:
+//0 = są na jdnej linii
+//1 = zgodny z ruchem wskazówek zegara
+//2 = przeciwko ruchu wskazówek zegara
 int orientation(Point p, Point q, Point r);
+
+//algorytm Jarvisa aby uzyskać otoczkę
 void findConvexHull(Point *points, unsigned int n);
+//prosta funckja zwracają strukturę (2 najblizsze punkty) oraz oblicza i wypisuje rowanie prsotej tych punktów
 NearestPoints findNearestPoints(Point *points, unsigned int n);
 
 int main() {
@@ -73,16 +85,19 @@ int orientation(Point p, Point q, Point r) {
 }
 
 void findConvexHull(Point *points, unsigned int n) {
+    //jeśli puntków jest mniej niż 3, nie ma otoczki
     if (n < 3) {
         return;
     }
 
+    //vector z punktami należącymi do otoczki
     std::vector<Point> hull;
 
+    //szukanie punktu najbardziej wysuniętego w lewo
     int l = 0;
 
     for (int i = 1; i < n; i++) {
-        if (points[i].x < points[l].x || (points[i].x == points[l].x && points[i].y < points[l].y)) {
+        if (points[i].x < points[l].x) {
             l = i;
         }
     }
@@ -90,12 +105,15 @@ void findConvexHull(Point *points, unsigned int n) {
     int p = l;
     int q = 0;
 
+    //pętla zaczyna od pierwszego punktu p i działa dopóki do niego nie wróci
     do {
         hull.push_back(points[p]);
 
+        //wybranie kolejnego punktu
         q = (p + 1) % n;
 
         for (unsigned int i = 0; i < n; i++) {
+            //sprawdzenie czy q czy i powinno być następnym punktem
             if (orientation(points[p], points[i], points[q]) == 2) {
                 q = i;
             }
@@ -115,6 +133,7 @@ NearestPoints findNearestPoints(Point *points, unsigned int n) {
     Point point1 = {0.0,0.0};
     Point point2 = {0.0,0.0};
 
+    //porównywanie odgległości między punktami points[i] i points[j], zapisywanie wartości jeśli mniejsza niż dotychczasowa najmniejsza
     for (int i = 0; i < n - 1; i++) {
         for (int j = i + 1; j < n; j++) {
             float x = points[j].x - points[i].x;
